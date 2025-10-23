@@ -1,3 +1,96 @@
-This is just me learning about ML and creating ML models.
+My Machine Learning Journey
 
-Following my journey about learning about ML.
+Welcome to my **Machine Learning Projects Repository**!  
+This repo documents my personal learning journey in **applied machine learning** — each project focuses on building intuition for key ML concepts, working with real datasets, and experimenting with different models.
+
+---
+
+## 📘 Projects
+
+### ⚽ 1. Fantasy Goal Predictor (Gradient Boosting Classifier)
+**Goal:** Predict which football players are most likely to score in their next game based on their recent stats.
+
+#### 🧠 Skills Learned:
+- Data preprocessing with **Pandas**
+- Creating a custom target feature (`Likely`)
+- Train/test split and model evaluation
+- Using **GradientBoostingClassifier** for prediction
+- Handling categorical variables with encoding
+
+#### ⚙️ Technologies:
+Python, Pandas, scikit-learn, Matplotlib  
+*(Dataset: Kaggle – Football Player Stats)*
+
+#### 📈 Example Features:
+- `goals_scored`
+- `expected_goals_per_90`
+- `assists`
+- `minutes`
+- `expected_assists_per_90`
+
+#### 🚀 Model:
+```python
+GradientBoostingClassifier(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=4
+)
+✅ Result:
+The model achieved solid predictive performance, showing how player stats like xG and minutes played can forecast upcoming goal likelihood — similar to metrics used in fantasy football or sports analytics tools.
+
+🎬 2. Improved Streaming Project (Random Forest on Kaggle Dataset)
+Goal: Predict whether a user “Liked” a movie (rating ≥ 4) using a dataset of movie metadata and user ratings.
+
+🧠 Skills Learned:
+Merging multiple CSVs and cleaning large datasets
+
+Feature engineering (genre extraction, popularity, votes)
+
+Applying a RandomForestClassifier
+
+Analyzing feature importance
+
+Visualizing results with Matplotlib
+
+⚙️ Technologies:
+Python, Pandas, scikit-learn, Matplotlib, ast
+(Dataset: Kaggle – Movies Metadata & Ratings)
+
+📊 Model:
+python
+Copy code
+RandomForestClassifier(
+    n_estimators=300,
+    max_depth=None,
+    random_state=42
+)
+📈 Key Features:
+Genre indicators (Action, Comedy, Drama, etc.)
+
+Popularity
+
+Vote count
+
+✅ Result:
+The model achieved strong accuracy and revealed which movie features most influence positive user ratings.
+This simulates how streaming platforms like Netflix or Spotify personalize recommendations.
+
+🧩 What I’m Learning Next
+Model tuning and hyperparameter optimization
+
+Feature scaling and normalization
+
+Streamlit dashboards for visual ML demos
+
+Neural networks and deep learning basics
+
+🏁 Summary
+Each project here reflects a new step in my ML learning path:
+
+Start simple ✅
+
+Understand the data deeply 📊
+
+Build explainable models 💡
+
+Move towards real-world applications 🚀
