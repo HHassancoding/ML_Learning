@@ -1,4 +1,4 @@
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics  import accuracy_score
@@ -19,15 +19,11 @@ y = goalsP['Likely']
 
 X_train, X_test, y_train, y_test = train_test_split(X,y, random_state=42,test_size=0.3)
 
-model = GradientBoostingClassifier(
+model = HistGradientBoostingClassifier(
                                     max_depth=4,
-                                    n_estimators = 100,
                                     learning_rate = 0.1
-                                  )
+                                      )
 model.fit(X,y)
-
-
-
 
 predictions = model.predict(X_test)
 
