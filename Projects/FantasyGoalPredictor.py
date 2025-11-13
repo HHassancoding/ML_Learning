@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 
-goalsP = pd.read_csv("fpl_player_statistics.csv", low_memory=False)
+goalsP = pd.read_csv("../BegineerLearningPhase/fpl_player_statistics.csv", low_memory=False)
 
 goalsP['Likely'] = goalsP.apply(lambda x:1 if(x['expected_goals_per_90']>0.4 or
                                              (x['goals_scored']>=6 and x['minutes']>=500)
