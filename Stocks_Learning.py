@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # Download data
 ticker = input ("Enter Stock Ticker: ").upper()
 
-data = yf.download(ticker, start="2024-01-01", end="2024-11-12")
+data = yf.download(ticker, start="2025-01-01", end="2025-10-12")
 
 
 # Indicators
@@ -12,6 +12,8 @@ data['MA50'] = data['Close'].rolling(window=50).mean()
 data['Daily Return'] = data['Close'].pct_change()
 data['Volatility50'] = data['Daily Return'].rolling(window=50).std()
 data['Volatility200'] = data['Daily Return'].rolling(window=200).std()
+close_col = data['Close'].iloc[:,0] if hasattr(data['Close'], 'columns') else data['Close']
+
 
 
 
@@ -25,6 +27,12 @@ def get_numeric_column(col):
 close_col = get_numeric_column(data['Close'])
 total_return = (close_col.iloc[-1] - close_col.iloc[0]) / close_col.iloc[0]
 
+#Number of trading days
+N = len(data)
+
+#Annual return
+annual_return = (1 + total_return) ** (252 / N) - 1
+
 high_price = get_numeric_column(data['High']).max()
 low_price = get_numeric_column(data['Low']).min()
 recent_price = get_numeric_column(data['Close']).iloc[-1]
@@ -35,7 +43,7 @@ print(f"Highest Price: ${high_price:.2f}")
 print(f"Lowest Price: ${low_price:.2f}")
 print(f"Most Recent Price: ${recent_price:.2f}")
 print(f"Total Return: {total_return*100:.2f}%")
-
+print(f"Annual Return: {annual_return*100:.2f}%")
 
 
 
