@@ -1,5 +1,11 @@
 import yfinance as yf
 import matplotlib.pyplot as plt
+from PIL.EpsImagePlugin import split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import accuracy_score, mean_absolute_error, r2_score
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
 
 # Download data
 ticker = input ("Enter Stock Ticker: ").upper()
@@ -44,6 +50,21 @@ print(f"Lowest Price: ${low_price:.2f}")
 print(f"Most Recent Price: ${recent_price:.2f}")
 print(f"Total Return: {total_return*100:.2f}%")
 print(f"Annual Return: {annual_return*100:.2f}%")
+
+data['target'] = data['Close'].shift(-1)
+data = data[:-1]
+X = data.drop(columns=['target'])
+Y = data['target']
+
+X_train, X_test, y_train, y_test = train_test_split(X,Y, train_size=0.3, random_state=42)
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+
+model.fit(X_train,y_train)
+prediction = model.predict(X_test)
+mean  = mean_absolute_error(y_test,prediction)
+r2 = r2_score(y_test, prediction)
+print(mean)
+print(r2)
 
 
 
