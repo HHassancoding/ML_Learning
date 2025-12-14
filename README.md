@@ -3,7 +3,6 @@
 A full-stack-ready stock analysis project that retrieves real market data, computes financial indicators, and uses machine learning to predict future stock prices.
 
 ---
-
 ## Features
 
 - Real-time stock data using Yahoo Finance
