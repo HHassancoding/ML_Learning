@@ -29,6 +29,11 @@ def download_stock(ticker: str, start: str = "2023-01-01", end: Optional[str] = 
     df = yf.download(ticker.upper(), start=start, end=end, progress=False)
     if df.empty:
         raise ValueError(f"No stock data returned for ticker '{ticker}'.")
+
+    # Flatten MultiIndex columns if present
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)  # keep only the first level: "Open", "Close", etc.
+
     return df
 
 
