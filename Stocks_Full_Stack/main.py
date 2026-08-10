@@ -1,4 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
+from starlette.responses import JSONResponse
+from fastapi import Request
+
 from model import (
     add_indicators,
     compute_stats,
@@ -9,6 +12,13 @@ from model import (
 )
 
 app = FastAPI()
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {str(exc)}"},
+    )
 
 
 @app.get("/")
@@ -37,8 +47,8 @@ def indicators(ticker: str = Query(..., min_length=1)):
     try:
         data = add_indicators(download_stock(ticker))
         cleaned = data.dropna(subset=["MA50", "Daily Return", "Volatility50", "Volatility200"])
-        if cleaned.empty:
-            raise ValueError("Not enough data to compute indicators.")
+        if len(data) < 200:
+            raise ValueError("Not enough historical data to compute reliable indicators.")
 
         latest = cleaned.iloc[-1]
         recent = cleaned.tail(10)
