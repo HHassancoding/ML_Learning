@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+yfinance
+pandas
+scikit-learn
+redis
+fastapi-cache2[redis]
