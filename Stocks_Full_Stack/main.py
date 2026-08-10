@@ -1,6 +1,12 @@
+import time
+
 from fastapi import FastAPI, HTTPException, Query
 from starlette.responses import JSONResponse
 from fastapi import Request
+from fastapi_cache.decorator import cache
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+import redis
 
 from model import (
     add_indicators,
@@ -12,6 +18,11 @@ from model import (
 )
 
 app = FastAPI()
+redis_client = redis.Redis(host="localhost", port=6379, decode_responses=False)
+
+@app.on_event("startup")
+async def init_cache():
+    FastAPICache.init(RedisBackend(redis_client), prefix="stock-api",cache_status_header="X-Cache",)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
@@ -78,6 +89,7 @@ def indicators(ticker: str = Query(..., min_length=1)):
 
 
 @app.get("/predict")
+@cache(expire=3600)  # cache for 1 hour
 def predict(ticker: str = Query(..., min_length=1)):
     try:
         data = add_indicators(download_stock(ticker))
@@ -90,6 +102,8 @@ def predict(ticker: str = Query(..., min_length=1)):
             "ticker": ticker.upper(),
             "predicted_next_day_close": float(next_day_prediction),
             "metrics": metrics,
+            "debug_ts": time.time(),  # <-- added
+
         }
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
