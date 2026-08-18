@@ -1,4 +1,5 @@
 import time
+import os
 
 from fastapi import FastAPI, HTTPException, Query
 from starlette.responses import JSONResponse
@@ -8,17 +9,29 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 import redis
 
-from model import (
-    add_indicators,
-    compute_stats,
-    download_stock,
-    evaluate_model,
-    prepare_training_data,
-    train_model,
-)
+try:
+    from .model import (
+        add_indicators,
+        compute_stats,
+        download_stock,
+        evaluate_model,
+        prepare_training_data,
+        train_model,
+    )
+except ImportError:
+    from model import (
+        add_indicators,
+        compute_stats,
+        download_stock,
+        evaluate_model,
+        prepare_training_data,
+        train_model,
+    )
 
 app = FastAPI()
-redis_client = redis.Redis(host="localhost", port=6379, decode_responses=False)
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=False)
 
 @app.on_event("startup")
 async def init_cache():
