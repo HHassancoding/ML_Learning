@@ -21,6 +21,7 @@ A full-stack-ready stock analysis project that retrieves real market data, compu
   - Predicts next-day closing price
   - Evaluated using MAE and R²
 - Backend-ready architecture for FastAPI integration
+- Streamlit dashboard frontend (**Terminal**) for analytics visualization
 
 ---
 
@@ -45,22 +46,47 @@ This model learns patterns from historical data rather than memorizing prices.
 Data: Python, pandas, numpy, yfinance  
 Machine Learning: scikit-learn  
 Visualization: matplotlib  
-Backend (in progress): FastAPI  
-Frontend (planned): React / Next.js  
+Backend: FastAPI  
+Frontend: Streamlit  
 
 ---
 
 ## How to Run
 
+### Docker (recommended)
+
+1. Start Docker Desktop (or Docker Engine).
+2. From the project root, run:
+
+```bash
+docker compose up --build
+```
+
+3. Open:
+   - Streamlit dashboard: `http://localhost:8501`
+   - FastAPI docs: `http://localhost:8000/docs`
+
+---
+
+### Local Python environment
+
 1. Install dependencies
 
 pip install -r requirements.txt
 
-2. Run the project
+2. Start Redis (required for cached `/predict` endpoint)
 
-python stock_analysis.py
+3. Start FastAPI backend
 
-3. Enter a stock ticker when prompted (e.g. AAPL, TSLA, MSFT)
+uvicorn Stocks_Full_Stack.main:app --reload
+
+4. Start the Streamlit dashboard
+
+streamlit run Stocks_Full_Stack/Dashboard.py
+
+5. Open the dashboard in your browser and enter a stock ticker (e.g. AAPL, TSLA, MSFT)
+
+Optional (CLI-only workflow): run `python stock_analysis.py` for terminal analysis output.
 
 ---
 
@@ -74,15 +100,13 @@ python stock_analysis.py
 
 ---
 
-## API Integration (In Progress)
-
-Planned FastAPI endpoints:
+## API Endpoints
 
 - /stats?ticker=AAPL
 - /indicators?ticker=TSLA
 - /predict?ticker=MSFT
 
-These endpoints will return JSON for frontend dashboards.
+These endpoints power the Streamlit dashboard.
 
 ---
 

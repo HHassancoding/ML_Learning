@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 import yfinance as yf
 from typing import Optional
@@ -25,17 +27,49 @@ def _to_series(column: pd.Series) -> pd.Series:
     return column
 
 
-def download_stock(ticker: str, start: str = "2023-01-01", end: Optional[str] = None) -> pd.DataFrame:
-    df = yf.download(ticker.upper(), start=start, end=end, progress=False)
+def download_stock(
+    ticker: str,
+    start: str = "2023-01-01",
+    end: Optional[str] = None,
+) -> pd.DataFrame:
+    df = yf.download(
+        ticker.upper(),
+        start=start,
+        end=end,
+        progress=False,
+        auto_adjust=True,
+    )
     if df.empty:
         raise ValueError(f"No stock data returned for ticker '{ticker}'.")
-
-    # Flatten MultiIndex columns if present
     if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)  # keep only the first level: "Open", "Close", etc.
-
+        df.columns = df.columns.get_level_values(0)
+    required_columns = ["Open", "High", "Low", "Close", "Volume"]
+    missing_columns = [
+        column for column in required_columns
+        if column not in df.columns
+    ]
+    if missing_columns:
+        raise ValueError(
+            f"Missing columns: {missing_columns}"
+        )
+    df = df[required_columns].copy()
+    for column in required_columns:
+        df[column] = pd.to_numeric(
+            _to_series(df[column]),
+            errors="coerce",
+        )
+    df = df.replace(
+        [float("inf"), float("-inf")],
+        pd.NA,
+    )
+    df = df.dropna(
+        subset=required_columns
+    )
+    if df.empty:
+        raise ValueError(
+            "No valid stock rows remain after cleaning."
+        )
     return df
-
 
 def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     data = df.copy()
@@ -52,23 +86,40 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
+
 def compute_stats(df: pd.DataFrame) -> dict:
-    close = _to_series(df["Close"])
-    high = _to_series(df["High"])
-    low = _to_series(df["Low"])
+    close = _to_series(df["Close"]).astype(float)
+    high = _to_series(df["High"]).astype(float)
+    low = _to_series(df["Low"]).astype(float)
 
-    total_return = (close.iloc[-1] - close.iloc[0]) / close.iloc[0]
+    total_return = (
+        close.iloc[-1] - close.iloc[0]
+    ) / close.iloc[0]
+
     trading_days = len(close)
-    annual_return = (1 + total_return) ** (252 / trading_days) - 1
 
-    return {
-        "highest_price": float(high.max()),
-        "lowest_price": float(low.min()),
-        "recent_price": float(close.iloc[-1]),
-        "total_return": float(total_return),
-        "annualized_return": float(annual_return),
+    annual_return = (
+        (1 + total_return) ** (252 / trading_days)
+    ) - 1
+
+    result = {
+        "highest_price": high.max(),
+        "lowest_price": low.min(),
+        "recent_price": close.iloc[-1],
+        "total_return": total_return,
+        "annualized_return": annual_return,
     }
 
+    for name, value in result.items():
+        if not math.isfinite(float(value)):
+            raise ValueError(
+                f"Calculated statistic '{name}' is invalid."
+            )
+
+    return {
+        name: float(value)
+        for name, value in result.items()
+    }
 
 def prepare_training_data(
     df: pd.DataFrame,
