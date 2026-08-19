@@ -1,0 +1,39 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: stock-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock-backend
+    command: uvicorn Stocks_Full_Stack.main:app --host 0.0.0.0 --port 8000
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock-frontend
+    command: streamlit run Stocks_Full_Stack/Dashboard.py --server.address=0.0.0.0 --server.port=8501 --browser.gatherUsageStats=false
+    environment:
+      FASTAPI_URL: http://backend:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
