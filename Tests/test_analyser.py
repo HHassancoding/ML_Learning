@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from Stocks_Full_Stack import model
+from stocks_full_stack import model
 
 
 def make_stock_dataframe(rows: int) -> pd.DataFrame:

@@ -6,3 +6,5 @@ scikit-learn
 redis
 fastapi-cache2[redis]
 streamlit
+pandas
+matplotlib
