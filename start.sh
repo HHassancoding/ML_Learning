@@ -26,7 +26,7 @@ echo "✅ Backend is running"
 
 # Start the Streamlit frontend (this runs in the foreground)
 echo "🎨 Starting frontend on port 8501..."
-streamlit run Stocks_Full_Stack/Dashboard.py \
+streamlit run src/stocks_full_stack/Dashboard.py \
     --server.address=0.0.0.0 \
     --server.port=8501 \
     --browser.gatherUsageStats=false
