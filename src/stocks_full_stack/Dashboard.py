@@ -4,11 +4,13 @@ import json
 import os
 from typing import Any
 from urllib import error, parse, request
+import dotenv
 
 import pandas as pd
 import streamlit as st
 
-DEFAULT_API_URL = os.getenv("FASTAPI_URL", "http://127.0.0.1:8000")
+dotenv.load_dotenv()
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 TIMEOUT_SECONDS = 20
 
 
@@ -62,7 +64,6 @@ st.markdown(
 
 with st.sidebar:
     st.header("Controls")
-    api_url = st.text_input("FastAPI URL", value=DEFAULT_API_URL)
     ticker = st.text_input("Ticker", value="AAPL").strip().upper()
     load_clicked = st.button("Load analytics", type="primary", use_container_width=True)
 
@@ -79,7 +80,7 @@ errors: dict[str, str] = {}
 
 for endpoint in ("stats", "indicators", "predict"):
     try:
-        responses[endpoint] = _fetch_json(api_url, endpoint, ticker)
+        responses[endpoint] = _fetch_json(API_URL, endpoint, ticker)
     except error.HTTPError as exc:
         try:
             detail_payload = json.loads(exc.read().decode("utf-8"))
