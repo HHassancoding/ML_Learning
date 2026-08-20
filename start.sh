@@ -7,7 +7,7 @@ echo "🚀 Starting Stock Analysis App..."
 
 # Start the FastAPI backend in the background
 echo "⚙️  Starting backend on port 8000..."
-uvicorn Stocks_Full_Stack.main:app --host 0.0.0.0 --port 8000 &
+uvicorn stocks_full_stack.main:app --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
 
 echo "✅ Backend started (PID: $BACKEND_PID)"
