@@ -11,4 +11,13 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
+# Copy the startup script
+COPY start.sh .
+
+# Make it executable
+RUN chmod +x start.sh
+
 EXPOSE 8000 8501
+
+# Run the startup script instead of a single command
+CMD ["./start.sh"]
