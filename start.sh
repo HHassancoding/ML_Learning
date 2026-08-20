@@ -1,13 +1,15 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status
 set -e
 
 echo "🚀 Starting Stock Analysis App..."
 
-# Start the FastAPI backend in the background
+# Add current directory to Python path
+export PYTHONPATH=/app:$PYTHONPATH
+
+# Start the FastAPI backend in the background (not exposed publicly)
 echo "⚙️  Starting backend on port 8000..."
-uvicorn src.stocks_full_stack.main:app --host 0.0.0.0 --port 8000 &
+uvicorn src.stocks_full_stack.main:app --host 127.0.0.1 --port 8000 &
 BACKEND_PID=$!
 
 echo "✅ Backend started (PID: $BACKEND_PID)"
@@ -24,12 +26,7 @@ fi
 
 echo "✅ Backend is running"
 
-# Start the Streamlit frontend (this runs in the foreground)
+# Start the Streamlit frontend (this is the main process - exposed publicly)
 echo "🎨 Starting frontend on port 8501..."
-streamlit run src/stocks_full_stack/Dashboard.py \
-    --server.address=0.0.0.0 \
-    --server.port=8501 \
-    --browser.gatherUsageStats=false
-
-# If Streamlit exits, the container will stop
-# (which is what we want - the main process should keep running)
+cd /app/src/stocks_full_stack
+streamlit run Dashboard.py --server.address=0.0.0.0 --server.port=8501 --browser.gatherUsageStats=false
